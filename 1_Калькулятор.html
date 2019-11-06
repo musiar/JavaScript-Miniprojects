@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Калькулятор</title>
+		<meta charset = "UTF-8">
+		<style>
+			h1
+				{
+					text-align: center;
+				}
+			#calc
+			    {
+			        margin: 20px auto;
+			        padding: 10px;
+			        border: 1px solid black;
+			        width: 200px;
+			    }
+
+			input
+			    {
+			        border: 1px solid black;
+			    }
+			#calc input.symbols, #calc_symbols span
+			    {
+			        width: 40px;
+			        height: 30px;
+			        text-align: center;
+			    }
+			#calc input.symbols:hover
+			    {
+			        color: white;
+			        background-color: black;
+			        cursor: pointer;
+			    }
+
+			#calc_symbols
+			    {
+			        padding-top: 10px;
+			        display: flex;
+			        flex-wrap: wrap;
+			        justify-content: space-between;
+			        
+			    }
+			#calc_symbols > *
+			    {
+			        margin-bottom: 5px;
+			    }
+			#calc_symbols:nth-last-child
+			    {
+			        font-weight: 30px;
+			    }
+			.calculation_field
+			    {
+			        width: 148px;
+			        margin-bottom: 5px;
+			    }
+			#calc input#clearBtn, #calculation_field, #calculation_field_2, #calc input#calculate
+			    {
+			        height: 20px;
+			        
+			    }
+		</style>
+		<script>
+			window.addEventListener('load', function(){
+			    var symbols = document.querySelectorAll('.symbols'),
+			        l = symbols.length,
+			        calc = document.querySelector('#calculate'),
+			        clearBtn = document.querySelector('#clearBtn');
+			    for(i = 0; i < l; i++)
+			        {
+			            symbols[i].setAttribute('readonly', 'true');
+			            var className = symbols[i].classList[1];
+			            if(className)
+			                symbols[i].addEventListener('click', addSymbol);
+			        }
+			    clearBtn.addEventListener('click', clear);
+			    calc.addEventListener('click', calculate);
+			    
+			})
+
+			function addSymbol(){
+			    var field = document.querySelector('#calculation_field'),
+			        val = field.value,
+			        symbol = this.value,
+			        className = this.classList[1];
+			    if(className == 'num')
+			        val += symbol;
+			    else if(className == 'command' || className == 'dot')
+			        {
+			            if(checkLastSymbol(val))
+			                val = replaceSymbol(val, symbol);
+			            else
+			                val += symbol;
+			        }
+			    field.value = val;
+			};
+			//проверка последнего символа в выражении при вводе
+			function checkLastSymbol(val){
+			    var last = val.slice(-1);
+			    if(last == '+' || last == '-' || last == '/' || last == '*' || last == '.')
+			        return true; //заменяем
+			    return false;
+			};
+			//замена символа (для '+', '-', '/', '*' и '.')
+			function replaceSymbol(str, s){
+			    return str = str.slice(0, -1) + str.charAt(str.length - 1).replace(str.charAt(str.length - 1), s);
+			}
+
+			//проверка первого символа в выражении
+			function checkFirst(str){
+			    var first = str.slice(0, 1);
+			    if(first == '.')
+			        str = 0 + str;
+			    else if(first == '+' || first == '/' || first == '*')
+			        str = str.slice(1);
+			    return str;
+			}
+
+			//проверка последнего символа в выражении
+			function checkLast(str){
+			    var last = str.slice(-1);
+			    if(last == '+' || last == '-' || last == '/' || last == '*' || last == '.')
+			        str = str.slice(0, -1);
+			    return str;
+			}
+			//равно
+			function calculate(){
+			    var field = document.querySelector('#calculation_field'),
+			        field2 = document.querySelector('#calculation_field_2'),
+			        val = field.value,
+			        res;
+			    if(val){
+			        val = checkFirst(val);
+			        val = checkLast(val);
+			        res = eval(val);
+			        field.value = res;
+			        field2.value = val;
+			    }
+			}
+
+			//очистить
+			function clear(){
+			    document.querySelector('#calculation_field').value = '';
+			    document.querySelector('#calculation_field_2').value = '';
+			}
+		</script>
+	</head>
+
+	<body>
+		<h1>Калькулятор</h1>
+		<div id = "calc">
+		    <input type = "text" id = "calculation_field" class = "calculation_field" onclick = "checkSymbol('2');" readonly>
+		    <input type = "text" value = "c" class = "symbols" id = "clearBtn" readonly>
+		    <input type = "text" id = "calculation_field_2" class = "calculation_field" onclick = "checkSymbol('2');" placeholder = "Выражение" readonly>
+		    <input type = "text" value = "=" class = "symbols" id = "calculate">
+		    
+		    <div id = "calc_symbols">
+		        <input type = "text" value = "1" class = "symbols num">
+		        <input type = "text" value = "2" class = "symbols num">
+		        <input type = "text" value = "3" class = "symbols num">
+		        
+		        <input type = "text" value = "+" class = "symbols command">
+		        
+		        <input type = "text" value = "4" class = "symbols num">
+		        <input type = "text" value = "5" class = "symbols num">
+		        <input type = "text" value = "6" class = "symbols num">
+		        
+		        <input type = "text" value = "-" class = "symbols command">
+		        
+		        <input type = "text" value = "7" class = "symbols num">
+		        <input type = "text" value = "8" class = "symbols num">
+		        <input type = "text" value = "9" class = "symbols num">
+		        
+		        <input type = "text" value = "/" class = "symbols command">
+		        
+		        <input type = "text" value = "." class = "symbols dot">
+		        <input type = "text" value = "0" class = "symbols num">
+		        <input type = "text" value = "*" class = "symbols command">
+		        <span></span>
+		    </div>
+		</div>
+	</body>
+</html>
