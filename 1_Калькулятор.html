@@ -20,12 +20,17 @@
 			    {
 			        border: 1px solid black;
 			    }
-			#calc input.symbols, #calc_symbols span
+			
+			#calc input.symbols
 			    {
 			        width: 40px;
 			        height: 30px;
 			        text-align: center;
 			    }
+			#calc_symbols span
+				{
+					width: 43px;
+				}
 			#calc input.symbols:hover
 			    {
 			        color: white;
@@ -38,8 +43,7 @@
 			        padding-top: 10px;
 			        display: flex;
 			        flex-wrap: wrap;
-			        justify-content: space-between;
-			        
+			        justify-content: space-between; 
 			    }
 			#calc_symbols > *
 			    {
@@ -57,7 +61,6 @@
 			#calc input#clearBtn, #calculation_field, #calculation_field_2, #calc input#calculate
 			    {
 			        height: 20px;
-			        
 			    }
 		</style>
 		<script>
