@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Игра: найди случайное число</title>
+		<meta charset = "UTF-8">
+		<style>
+			#game
+			    {
+			        margin: 20px auto;
+			        padding: 10px 20px;
+			        width: 80%;
+			        max-width: 1200px;
+			        min-width: 500px;
+			        text-align: center;
+			    }
+			#game > *
+			    {
+			        margin: 10px;
+			    }
+			#game table
+			    {
+			        display: inline-block;
+			    }
+			#game table, #game table td
+			    {
+			        
+			        border-collapse: collapse;
+			        
+			    }
+			#game table td
+			    {
+			        font-weight: bold;
+			        border: 2px solid black;
+			        padding: 5px;
+			        text-align: center;
+			        vertical-align: middle;
+			        width: 50px;
+			        height: 50px;
+			    }
+			td:hover
+			    {
+			        cursor: pointer;
+			        background-color: #eee;
+			    }
+			.marked, td.marked:hover
+			    {
+			        cursor: default;
+			        background-color: #fffdb5;
+			    }
+		</style>
+
+		<script type="text/javascript">
+			var colors = ['#a31a1a', '#1a9aa3', '#6fa31a', 
+                '#1aa361', '#1aa331', '#fff712', 
+                '#ff8412', '#ff4912', '#12b8ff',
+                '#ff12d7', '#941090', '#4f154d', 
+                '#ffb545', '#a2ff45', '#de9400',
+                '#e3d874', '#1aad92', '#ad1a61'],
+		    colorsCount = colors.length,
+		    fontSize = [],//массив размеров шрифтов
+		    fieldLength, //длина строки/столбца
+		    fieldFull, //fieldLength в квадрате
+		    currentNum, //последний найденный номер в игре
+		    totalTime, //отведенное время
+		    gameTimer; //счётчик времени
+		    //заполнение массива размеров шрифтов
+		    for(i = 13; i <= 25; i++)
+		        fontSize.push(i);
+		    var fontCount = fontSize.length;
+
+			window.addEventListener('load', function(){
+			    var table = document.querySelector('#game table'),
+			        counter = document.querySelector('#counter'),
+			        startBtn = document.querySelector('#play');
+			    
+			    window.table = table;
+			    window.counter = counter;
+			    window.startBtn = startBtn;
+			    startBtn.addEventListener('click', startGame);
+			});
+
+
+			//начать игру
+			function startGame(){
+			    if(gameTimer)
+			        clearInterval(gameTimer);
+			    var level = document.querySelector('#level input[type=radio]:checked');
+			    fieldLength = level.value;
+			    fieldFull = Math.pow(fieldLength, 2);
+			    currentNum = 0;
+			    totalTime = fieldFull * 3;
+			    counter.innerHTML = totalTime;
+			    gameTimer = setInterval(timer, 1000);
+			    fillTable();
+			};
+
+			//счетчик времени
+			function timer(){
+			    if(totalTime > 1)
+			       {
+			           totalTime--;
+			           counter.innerHTML = totalTime;
+			       }
+			    else
+			        stopGame();
+			};
+
+			//остановить игру
+			function stopGame(){
+			    clearInterval(gameTimer);
+			    counter.innerHTML = "Время вышло";
+			    var activeCells = document.querySelectorAll('#game table td:not(.marked)'),
+			        l = activeCells.length;
+			    if(activeCells)
+			        {
+			            for(i = 0; i < l; i++)
+			                activeCells[i].removeEventListener('click', checkElem);
+			        }
+			};
+
+			//заполнение таблицы после запуска новой игры
+			function fillTable(){
+			    table.innerHTML = '',
+			    currentNum = 0;
+			    var arr = [],
+			        min = 0,
+			        max = fieldFull,
+			        rand;
+			    for(i = 0; i < fieldLength; i++)
+			        {
+			            var tr = document.createElement('tr');
+			            for(j = 0; j < fieldLength; j++)
+			                {
+			                    do{
+			                        rand = Math.ceil(Math.random() * (max - min));
+			                    } while (arr.indexOf(rand) != -1);
+			                    arr.push(rand);
+			                    var td = document.createElement('td');
+			                    randStyle(td);
+			                    td.innerHTML = rand;
+			                    td.addEventListener('click', checkElem);
+			                    tr.appendChild(td);
+			                }
+			            table.appendChild(tr);
+			        }
+			};
+
+			//проверка выигрыша
+			function checkElem(){
+			    var num = Number(this.innerHTML);
+			    if(num - 1 == currentNum)
+			        {
+			            this.classList.add('marked');
+			            currentNum++;
+			            if(num == fieldFull)
+			                win();
+			        }
+			};
+
+			//выигрыш
+			function win(){
+			    clearInterval(gameTimer);
+			    counter.innerHTML = "Вы выиграли!";
+			}
+
+
+			//стили при отрисовке таблицы
+			function randStyle(elem){
+			    elem.style.color = randColor();
+			    elem.style.fontSize = randFontSize() + 'px';
+			};
+
+			function randColor(){
+			    return colors[Math.ceil(Math.random() * colorsCount-1)];
+			};
+			function randFontSize(){
+			    return fontSize[Math.ceil(Math.random() * fontCount-1)];
+			};
+		</script>
+	</head>
+
+	<body>
+		<div id = "game">
+		    <h1>Найди случайное число</h1>
+		    <p>Начиная с "1" нажимайте на числа до тех пор, пока не дойдете до последнего.</p>
+		    
+		    <fieldset id = "level">
+		        <legend>Выберите уровень сложности</legend>
+		        <input type = "radio" name = "level" value = "3">3х3
+		        <input type = "radio" name = "level" value = "4">4х4
+		        <input type = "radio" name = "level" value = "5" checked>5х5
+		        <input type = "radio" name = "level" value = "6">6х6
+		        <input type = "radio" name = "level" value = "7">7х7
+		        <input type = "radio" name = "level" value = "8">8х8
+		        <input type = "radio" name = "level" value = "9">9х9
+		        <input type = "radio" name = "level" value = "10">10х10
+		    </fieldset>
+		    
+		    <p id = "counter"> </p>
+		    
+		    <table>
+
+		    </table>
+		    <br>
+		    <button id = "play">Начать</button>
+		</div>
+
+		
+	</body>
+</html>
